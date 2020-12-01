@@ -7,7 +7,7 @@ lock_status = "nothing"
 def on_message(client, userdata, message):
     print("Data recieved: "+ str(message.payload.decode("utf-8")))
     #print("message topic=", message.topic)
-    #chageStatus(client, str(message.payload.decode("utf-8")))
+    chageStatus(client, str(message.payload.decode("utf-8")))
 
 #callback function to connect to the broker
 def on_connect(client, userdata, flags, rc):
@@ -16,10 +16,9 @@ def on_connect(client, userdata, flags, rc):
 
 
 def chageStatus(client, status):
-    global lock_status
     lock_status = status
-    #print(lock_status)
-    #client.publish("LockState", lock_status)
+    print(lock_status)
+    client.publish("LockState", lock_status)
 
 
 def main():
@@ -31,14 +30,13 @@ def main():
     client.on_connect = on_connect
     client.on_message = on_message
 
-    while True:
-        # val = input("Enter what you want to send: ")
-        # val = "hello"
-        #global lock_status
-        #print(lock_status)
-        #client.publish("LockState", lock_status)
+    # val = input("Enter what you want to send: ")
+    # val = "hello"
 
-        time.sleep(5)
+    print(lock_status)
+    client.publish("LockState", lock_status)
+
+    time.sleep(5)
 
     client.loop_forever()
 

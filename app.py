@@ -22,7 +22,7 @@ def on_message(client, userdata, message):
 def on_connect(client, userdata, flags, rc):
     print("connected ok!")
     client.publish("Data","This is a test")
-    #client.subscribe("LockState")
+    client.subscribe("LockState")
     #client.subscribe("Data")
 
 
