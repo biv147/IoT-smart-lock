@@ -36,7 +36,6 @@ def main():
     print(lock_status)
     client.publish("LockState", lock_status)
 
-    time.sleep(5)
 
     client.loop_forever()
 

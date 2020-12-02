@@ -9,8 +9,11 @@ app = Flask(__name__)
 
 username = ""
 password = ""
-status = ""
+
 database = "userdata.db"
+
+
+status = ""
 
 Table = """
 DROP TABLE IF EXISTS authentication ;
@@ -30,7 +33,8 @@ conn.executescript(Table)
 def on_message(client, userdata, message):
     print("Data recieved: " + str(message.payload.decode("utf-8")))
     print("Topic=", message.topic)
-    # store_data(message.payload.decode("utf-8"), message.payload.decode("utf-8"))
+    store_state(str(message.payload.decode("utf-8")))
+
 
 
 # callback function to connect to the broker
@@ -39,11 +43,15 @@ def on_connect(client, userdata, flags, rc):
         print("Connected!\n")
     else:
         print("Unable to connect!\n")
-    # client.publish("Data","This is a test")
     client.subscribe("LockState")
-    # client.subscribe("Data")
     return client
 
+def store_state(state):
+    global status
+    status = state
+
+def return_state():
+    return status
 
 def store_data(username, password):
     conn = connection.cursor()
@@ -95,8 +103,8 @@ def signup():
         print(username)
         print(password)
 
-        client.publish("Data", username)
-        client.publish("Data", password)
+        # client.publish("Data", username)
+        # client.publish("Data", password)
         store_data(username, password)
 
         return redirect('http://127.0.0.1:5000/')
@@ -116,31 +124,30 @@ def home():
         print(password)
         check_auth(username, password)
 
-        client.publish("Data", username)
-        client.publish("Data", password)
+        # client.publish("Data", username)
+        # client.publish("Data", password)
 
-        return redirect(request.url)
+        return redirect("http://127.0.0.1:5000/lock_status")
 
     return render_template('home.html')
 
-@app.route("/lock-status", methods=["GET", "POST"])
-def home():
+@app.route("/lock_status", methods=["POST", "GET"])
+def lock():
+
     if request.method == "POST":
-        req = request.form
+        if request.form['state'] == 'lock':
+            print("locked")
+            client.publish("Data", "locked")
 
-        username = req.get("user")
-        password = req.get("pass")
+            return redirect("http://127.0.0.1:5000/lock_status")
 
-        print(username)
-        print(password)
-        check_auth(username, password)
+        elif request.form['state'] == 'unlock':
+            print("unlocked")
+            client.publish("Data", "unlocked")
 
-        client.publish("Data", username)
-        client.publish("Data", password)
+            return redirect("http://127.0.0.1:5000/lock_status")
 
-        return redirect(request.url)
-
-    return render_template('lockstatus')
+    return render_template('lock_status.html', data=return_state())
 
 
 # running flask

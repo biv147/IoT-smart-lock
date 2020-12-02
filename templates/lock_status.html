@@ -2,9 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Lock Status</title>
 </head>
 <body>
+    <form method="GET">
+        <h1>{{ data }}</h1>
+    </form>
 
+    <form method="POST">
+        <button name="state" value="lock" type="submit">Lock</button>
+    </form>
+    <form method="POST">
+        <button name="state" value="unlock" type="submit">Unlock</button>
+    </form>
 </body>
 </html>
