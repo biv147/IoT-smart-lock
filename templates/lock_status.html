@@ -1,19 +1,21 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>Lock Status</title>
 </head>
-<body>
-    <form method="GET">
+
+<body style="background-color: #22D2E5">
+    <h1 style="text-align: center">SmartLock Status</h1>
+    <form method="GET" style="text-align: center; position: relative; top: 50px">
         <h1>{{ data }}</h1>
     </form>
 
-    <form method="POST">
-        <button name="state" value="lock" type="submit">Lock</button>
+    <form method="POST" style="position: relative; text-align: center; top: 70px">
+        <button style="margin-right: 10px; font-size: 24px" name="state" value="lock" type="submit">Lock <i class="fa fa-lock"></i></button>
+        <button style="font-size: 24px" name="state" value="unlock" type="submit">Unlock <i class="fa fa-unlock"></i></button>
     </form>
-    <form method="POST">
-        <button name="state" value="unlock" type="submit">Unlock</button>
-    </form>
+
 </body>
 </html>

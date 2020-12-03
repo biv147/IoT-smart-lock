@@ -1,33 +1,20 @@
-import json
 import paho.mqtt.client as mqtt
-from flask import Flask, request, render_template, jsonify, redirect
-import sqlite3 as sql
+from flask import Flask, request, render_template, redirect
 import time
+import pyrebase
 
+
+
+firebase = pyrebase.initialize_app(firebaseConfig)
+auth = firebase.auth()
 
 # flask name
 app = Flask(__name__)
 
-username = ""
+email = ""
 password = ""
 
-database = "userdata.db"
-
-
 status = ""
-
-# Table = """
-# DROP TABLE IF EXISTS authentication ;
-# CREATE TABLE authentication (
-#   username text,
-#   password text
-# );
-# """
-
-# connection = sql.connect(database, check_same_thread=0)
-# conn = connection.cursor()
-# sql.complete_statement(Table)
-# conn.executescript(Table)
 
 
 # callback function to retrieve message
@@ -35,7 +22,6 @@ def on_message(client, userdata, message):
     print("Data recieved: " + str(message.payload.decode("utf-8")))
     print("Topic=", message.topic)
     store_state(str(message.payload.decode("utf-8")))
-
 
 
 # callback function to connect to the broker
@@ -47,46 +33,29 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("LockState")
     return client
 
+
 def store_state(state):
     global status
     status = state
 
+
 def return_state():
     return status
 
-def store_data(username, password):
-    conn = connection.cursor()
-    print("Storing to database...")
-    conn.execute("INSERT INTO authentication VALUES(?,?)", (username, password))
-    connection.commit()
-
-
-#def check_auth(username, password):
-    # conn = connection.cursor()
-    # print("Checking the database")
-    # conn.execute("SELECT * FROM authentication WHERE username='%s' AND password='%s'" % (username, password))
-    # checkUser = conn.fetchone()
-
-    # if (checkUser is not None):
-    #     print("Logged in successful")
-    # else:
-    #     print("Username does not exist")
-    #     return redirect("http://127.0.0.1:5000/")
 
 
 # creating the client and connecting it
 client = mqtt.Client()
-# client.on_message = on_message
 print("Connecting to broker...")
 time.sleep(1)
 
-# subsribing and getting the messages
+# subscribing and getting the messages
 client.on_connect = on_connect
 client.on_message = on_message
 
 # connect to broker
 client.connect("localhost", 1833, 60)
-#store_data("preet", "1234")
+
 
 # starting the loop
 client.loop_start()
@@ -98,21 +67,26 @@ def signup():
     if request.method == "POST":
         req = request.form
 
-        username = req.get("user")
+        email = req.get("user")
         password = req.get("pass")
         confirmpassword = req.get("confirmpass")
 
-        print(username)
-        print(password)
+        print("Email: "+email)
+        print("Password: "+password)
 
-        # client.publish("Data", username)
-        # client.publish("Data", password)
-        if(password == confirmpassword):
-            store_data(username, password)
+        if (len(password) >= 6):
+            if (password == confirmpassword):
+                try:
+                    user = auth.create_user_with_email_and_password(email, password)
+                    print("User has been added")
+                    return redirect('http://127.0.0.1:5000/')
+                except:
+                    print("unable to add user")
+            else:
+                print("Passwords do not match")
+                #return redirect('http://127.0.0.1:5000/sign_up')
         else:
-            return redirect('http://127.0.0.1:5000/sign_up')
-
-        return redirect('http://127.0.0.1:5000/')
+            print("Password must be 6 characters long minimum")
 
     return render_template('sign_up.html')
 
@@ -122,32 +96,24 @@ def home():
     if request.method == "POST":
         req = request.form
 
-        username = req.get("user")
+        email = req.get("user")
         password = req.get("pass")
 
-        print("Username: " + username)
+        print("email: " + email)
         print("Password: " + password)
-        #check_auth(username, password)
 
-        conn = connection.cursor()
-        print("Checking the database")
-        conn.execute("SELECT * FROM authentication WHERE username='%s' AND password='%s'" % (username, password))
-        checkUser = conn.fetchone()
-
-        if (checkUser is not None):
-            print("Logged in successful")
+        try:
+            login = auth.sign_in_with_email_and_password(email, password)
+            print("logged in")
             return redirect("http://127.0.0.1:5000/lock_status")
-        else:
-            print("Username does not exist")
-            return redirect("http://127.0.0.1:5000/")
-        
-        #return redirect("http://127.0.0.1:5000/lock_status")
+        except:
+            print("invalid user")
 
     return render_template('home.html')
 
+
 @app.route("/lock_status", methods=["POST", "GET"])
 def lock():
-
     if request.method == "POST":
         if request.form['state'] == 'lock':
             print("locked")
@@ -167,4 +133,3 @@ def lock():
 # running flask
 if __name__ == '__main__':
     app.run()
-
