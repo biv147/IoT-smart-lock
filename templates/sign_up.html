@@ -4,19 +4,24 @@
     <meta charset="UTF-8">
     <title>Sign Up</title>
 </head>
-<body>
-    <form method="POST">
-        <div>
-            <label><b>Username</b></label>
-            <input type="text" id="user" placeholder="Enter Username" name="user" required>
+<body style="background-color: #92B4D2;">
+
+    <h1 style="text-align: center; ">SmartLock Sign Up</h1>
+
+    <form method="POST" style="margin: 20px auto; width: 320px;">
+
+        <div style="text-align: center;">
+            <input style="width: 300px; padding: 5px; font-size: inherit; margin-bottom: 10px;" type="text" id="user" placeholder="Enter Username" name="user" required>
+            <input style="width: 300px; padding: 5px; font-size: inherit; margin-bottom: 10px;" type="password" id="pass" placeholder="Enter Password" name="pass" required>
+            <input style="width: 300px; padding: 5px; font-size: inherit; margin-bottom: 10px;" type="password" id="confirmpass" placeholder="Confirm Password" name="confirmpass" required>
+
         </div>
 
-        <div>
-            <label><b>Password</b></label>
-            <input type="password" id="pass" placeholder="Enter Password" name="pass" required>
-        </div>
+        <div style="text-align: center;">
+            <button style="color: white; width: 312px; padding: 9px; background: steelblue; border: none" type="submit">Sign Up</button>
+            <h5>Already a user? <a href="http://127.0.0.1:5000/">Sign In</a></h5>
 
-        <button type="submit">Sign Up</button>
+        </div>
 
     </form>
 

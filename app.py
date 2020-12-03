@@ -4,6 +4,7 @@ from flask import Flask, request, render_template, jsonify, redirect
 import sqlite3 as sql
 import time
 
+
 # flask name
 app = Flask(__name__)
 
@@ -15,18 +16,18 @@ database = "userdata.db"
 
 status = ""
 
-Table = """
-DROP TABLE IF EXISTS authentication ;
-CREATE TABLE authentication (
-  username text,
-  password text
-);
-"""
+# Table = """
+# DROP TABLE IF EXISTS authentication ;
+# CREATE TABLE authentication (
+#   username text,
+#   password text
+# );
+# """
 
-connection = sql.connect(database, check_same_thread=0)
-conn = connection.cursor()
-sql.complete_statement(Table)
-conn.executescript(Table)
+# connection = sql.connect(database, check_same_thread=0)
+# conn = connection.cursor()
+# sql.complete_statement(Table)
+# conn.executescript(Table)
 
 
 # callback function to retrieve message
@@ -60,17 +61,17 @@ def store_data(username, password):
     connection.commit()
 
 
-def check_auth(username, password):
-    conn = connection.cursor()
-    print("Checking the database")
-    conn.execute("SELECT * FROM authentication WHERE username='%s' AND password='%s'" % (username, password))
-    checkUser = conn.fetchone()
+#def check_auth(username, password):
+    # conn = connection.cursor()
+    # print("Checking the database")
+    # conn.execute("SELECT * FROM authentication WHERE username='%s' AND password='%s'" % (username, password))
+    # checkUser = conn.fetchone()
 
-    if (checkUser is not None):
-
-        print("Logged in successful")
-    else:
-        print("Username does not exist")
+    # if (checkUser is not None):
+    #     print("Logged in successful")
+    # else:
+    #     print("Username does not exist")
+    #     return redirect("http://127.0.0.1:5000/")
 
 
 # creating the client and connecting it
@@ -85,7 +86,7 @@ client.on_message = on_message
 
 # connect to broker
 client.connect("localhost", 1833, 60)
-store_data("preet", "1234")
+#store_data("preet", "1234")
 
 # starting the loop
 client.loop_start()
@@ -99,13 +100,17 @@ def signup():
 
         username = req.get("user")
         password = req.get("pass")
+        confirmpassword = req.get("confirmpass")
 
         print(username)
         print(password)
 
         # client.publish("Data", username)
         # client.publish("Data", password)
-        store_data(username, password)
+        if(password == confirmpassword):
+            store_data(username, password)
+        else:
+            return redirect('http://127.0.0.1:5000/sign_up')
 
         return redirect('http://127.0.0.1:5000/')
 
@@ -120,14 +125,23 @@ def home():
         username = req.get("user")
         password = req.get("pass")
 
-        print(username)
-        print(password)
-        check_auth(username, password)
+        print("Username: " + username)
+        print("Password: " + password)
+        #check_auth(username, password)
 
-        # client.publish("Data", username)
-        # client.publish("Data", password)
+        conn = connection.cursor()
+        print("Checking the database")
+        conn.execute("SELECT * FROM authentication WHERE username='%s' AND password='%s'" % (username, password))
+        checkUser = conn.fetchone()
 
-        return redirect("http://127.0.0.1:5000/lock_status")
+        if (checkUser is not None):
+            print("Logged in successful")
+            return redirect("http://127.0.0.1:5000/lock_status")
+        else:
+            print("Username does not exist")
+            return redirect("http://127.0.0.1:5000/")
+        
+        #return redirect("http://127.0.0.1:5000/lock_status")
 
     return render_template('home.html')
 

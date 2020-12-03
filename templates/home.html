@@ -2,25 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <title>SmartLock Login</title>
 </head>
-<body>
-    <form method="POST">
-        <div>
-            <label><b>Username</b></label>
-            <input type="text" id="user" placeholder="Enter Username" name="user" required>
+<body style="background-color: #92B4D2">
+    
+    <h1 style="text-align: center; ">SmartLock Login</h1>
+    <form method="POST" style="margin: 20px auto; width: 320px;">
+
+        <div style="text-align: center;">
+            <input style="width: 300px; padding: 5px; font-size: inherit; margin-bottom: 10px;" type="text" id="user" placeholder="Username" name="user" required>
+            <input style="width: 300px; padding: 5px; font-size: inherit; margin-bottom: 10px;" type="password" id="pass" placeholder="Password" name="pass" required>
         </div>
 
-        <div>
-            <label><b>Password</b></label>
-            <input type="password" id="pass" placeholder="Enter Password" name="pass" required>
+        <div style="text-align: center;">
+            <button style="color:white; width: 312px; padding: 9px; background: steelblue; border: none" type="submit">Login</button>
+            <h5>Don't have an account? <a href="http://127.0.0.1:5000/sign_up">Sign Up</a></h5>
         </div>
-
-        <button type="submit">Login</button>
-
-
-
-
     </form>
 
 </body>
